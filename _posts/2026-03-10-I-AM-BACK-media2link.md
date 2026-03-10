@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Link Generator Bot — Telegram File-to-URL Service"
-date: 2025-01-01
+date: 2026-03-10
 description: "A lightweight Telegram bot that accepts any file and returns a permanent public download link. Built with Pyrogram, FastAPI, and deployable on HuggingFace Spaces via Docker."
 tags: [telegram, bot, python, fastapi, pyrogram, docker, huggingface]
 ---
