@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MysticMate Unlock Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Dots&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --border: #2a2a40;
+    --accent: #7c6af7;
+    --accent2: #f76ab0;
+    --accent3: #6af7d4;
+    --text: #e8e8f0;
+    --muted: #7070a0;
+    --code-bg: #0d0d18;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── Noise overlay ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.4;
+  }
+
+  /* ── Grid background ── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(124,106,247,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,106,247,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Glow orbs ── */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.12;
+  }
+  .orb-1 { width: 600px; height: 600px; background: var(--accent); top: -200px; left: -200px; }
+  .orb-2 { width: 400px; height: 400px; background: var(--accent2); bottom: 0; right: -100px; }
+  .orb-3 { width: 300px; height: 300px; background: var(--accent3); top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+  /* ── Layout ── */
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ── Hero ── */
+  header {
+    position: relative;
+    padding: 100px 0 80px;
+    text-align: center;
+  }
+
+  .tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent3);
+    background: rgba(106,247,212,0.08);
+    border: 1px solid rgba(106,247,212,0.2);
+    padding: 4px 12px;
+    border-radius: 2px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  h1 {
+    font-family: 'Zen Dots', cursive;
+    font-size: clamp(36px, 7vw, 72px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 20px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 520px;
+    margin: 0 auto 40px;
+    font-weight: 400;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  .hero-badges {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+
+  .badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 2px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: var(--surface);
+  }
+  .badge.green { color: var(--accent3); border-color: rgba(106,247,212,0.3); background: rgba(106,247,212,0.05); }
+  .badge.pink  { color: var(--accent2); border-color: rgba(247,106,176,0.3); background: rgba(247,106,176,0.05); }
+  .badge.purple{ color: var(--accent);  border-color: rgba(124,106,247,0.3); background: rgba(124,106,247,0.05); }
+
+  /* ── Section ── */
+  section {
+    margin-bottom: 64px;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+
+  h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+  }
+
+  p { color: #b0b0c8; margin-bottom: 12px; }
+
+  /* ── Steps ── */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 0;
+    position: relative;
+  }
+
+  .step-num-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .step-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    transition: all 0.2s;
+  }
+
+  .step:hover .step-num {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 0 20px rgba(124,106,247,0.4);
+  }
+
+  .step-line {
+    width: 1px;
+    flex: 1;
+    background: var(--border);
+    margin: 4px 0;
+  }
+
+  .step:last-child .step-line { display: none; }
+
+  .step-body {
+    padding: 4px 0 28px 16px;
+  }
+
+  .step-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 6px;
+    padding-top: 6px;
+  }
+
+  .step-desc {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  /* ── Code blocks ── */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin: 16px 0;
+    overflow: hidden;
+  }
+
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .code-filename {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .code-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .code-dot.r { background: #ff5f57; }
+  .code-dot.y { background: #febc2e; }
+  .code-dot.g { background: #28c840; }
+
+  .copy-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    background: none;
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .copy-btn:hover { color: var(--accent3); border-color: var(--accent3); }
+  .copy-btn.copied { color: var(--accent3); border-color: var(--accent3); }
+
+  pre {
+    padding: 20px;
+    overflow-x: auto;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    color: #c8c8e8;
+  }
+
+  .hl-comment { color: #4a4a70; font-style: italic; }
+  .hl-key     { color: var(--accent2); }
+  .hl-val     { color: var(--accent3); }
+  .hl-add     { color: #6af7a0; background: rgba(106,247,160,0.08); display: block; margin: 0 -20px; padding: 0 20px; border-left: 2px solid #6af7a0; }
+
+  /* ── File cards ── */
+  .file-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 20px 0;
+  }
+
+  @media (max-width: 560px) { .file-cards { grid-template-columns: 1fr; } }
+
+  .file-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px;
+    transition: all 0.2s;
+    cursor: default;
+  }
+
+  .file-card:hover {
+    border-color: var(--accent);
+    background: var(--surface2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(124,106,247,0.1);
+  }
+
+  .file-icon {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  .file-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--accent3);
+    margin-bottom: 6px;
+    word-break: break-all;
+  }
+
+  .file-desc {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  /* ── Warning / info boxes ── */
+  .callout {
+    display: flex;
+    gap: 14px;
+    padding: 16px 20px;
+    border-radius: 6px;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+
+  .callout.info {
+    background: rgba(124,106,247,0.08);
+    border: 1px solid rgba(124,106,247,0.2);
+    color: #b8b0f0;
+  }
+
+  .callout.warn {
+    background: rgba(247,180,106,0.08);
+    border: 1px solid rgba(247,180,106,0.2);
+    color: #f0d0a0;
+  }
+
+  .callout.ok {
+    background: rgba(106,247,160,0.06);
+    border: 1px solid rgba(106,247,160,0.2);
+    color: #a0f0c0;
+  }
+
+  .callout-icon { font-size: 18px; flex-shrink: 0; }
+
+  /* ── FAQ ── */
+  .faq-item {
+    border-bottom: 1px solid var(--border);
+    padding: 20px 0;
+  }
+
+  .faq-q {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    user-select: none;
+  }
+
+  .faq-q:hover { color: var(--accent); }
+
+  .faq-chevron {
+    color: var(--muted);
+    font-size: 18px;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+
+  .faq-item.open .faq-chevron { transform: rotate(180deg); }
+
+  .faq-a {
+    font-size: 14px;
+    color: var(--muted);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.2s;
+  }
+
+  .faq-item.open .faq-a {
+    max-height: 300px;
+    padding-top: 12px;
+  }
+
+  /* ── Footer ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 40px 0;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { color: var(--accent2); }
+
+  /* ── Divider ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 64px 0;
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<div class="wrapper">
+
+  <!-- HERO -->
+  <header>
+    <div class="tag">installation guide</div>
+    <h1>MysticMate<br>Unlock Patch</h1>
+    <p class="hero-sub">Unlock all mascots permanently — two files, one reload, done.</p>
+    <div class="hero-badges">
+      <span class="badge green">✓ No tools required</span>
+      <span class="badge pink">✓ Original files mostly intact</span>
+      <span class="badge purple">✓ Survives browser restarts</span>
+    </div>
+  </header>
+
+  <div class="divider"></div>
+
+  <!-- OVERVIEW -->
+  <section class="reveal">
+    <div class="section-label">overview</div>
+    <h2>How It Works</h2>
+    <p>The patch adds a single self-contained script (<code style="font-family:'DM Mono',monospace;color:var(--accent3);font-size:13px">unlock-mascots.js</code>) that runs inside MysticMate's background service worker. From there it has full access to MysticMate's own storage, probes which mascot folders actually exist in your install, and writes them all as owned — every time the browser starts.</p>
+
+    <div class="file-cards">
+      <div class="file-card">
+        <div class="file-icon">📄</div>
+        <div class="file-name">unlock-mascots.js</div>
+        <div class="file-desc">New file — drop it into the <code style="font-size:12px;color:var(--accent)">/assets/</code> folder</div>
+      </div>
+      <div class="file-card">
+        <div class="file-icon">✏️</div>
+        <div class="file-name">service-worker-loader.js</div>
+        <div class="file-desc">Existing file — replace with version that imports the patch (1 line added)</div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <span>No JS logic from MysticMate is changed. The original extension code runs exactly as before — we're just adding a new file and a one-line import.</span>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- STEPS -->
+  <section class="reveal">
+    <div class="section-label">installation</div>
+    <h2>Step-by-Step</h2>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num-col">
+          <div class="step-num">1</div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title">Find MysticMate's extension folder</div>
+          <p class="step-desc">Open Chrome and go to <code style="font-family:'DM Mono',monospace;color:var(--accent3);font-size:12px">chrome://extensions</code>. Enable <strong>Developer mode</strong> (top-right toggle). Find MysticMate and click <strong>Details</strong>, then note its ID: <code style="font-family:'DM Mono',monospace;color:var(--accent);font-size:12px">biaplbhoaffjahhmbkfmdoagkklhanao</code></p>
+          <div class="callout info" style="margin-top:12px">
+            <span class="callout-icon">💡</span>
+            <span>The folder is typically at:<br>
+            <strong>Windows:</strong> <code style="font-family:'DM Mono',monospace;font-size:12px">%LOCALAPPDATA%\Google\Chrome\User Data\Default\Extensions\biaplbhoaffjahhmbkfmdoagkklhanao\</code><br>
+            <strong>macOS:</strong> <code style="font-family:'DM Mono',monospace;font-size:12px">~/Library/Application Support/Google/Chrome/Default/Extensions/biaplbhoaffjahhmbkfmdoagkklhanao/</code></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num-col">
+          <div class="step-num">2</div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title">Copy <code style="font-family:'DM Mono',monospace;font-size:14px">unlock-mascots.js</code> into <code style="font-family:'DM Mono',monospace;font-size:14px">/assets/</code></div>
+          <p class="step-desc">Inside the versioned MysticMate folder (e.g. <code style="font-family:'DM Mono',monospace;font-size:12px">1.0.0_0/</code>), open the <code style="font-family:'DM Mono',monospace;font-size:12px">assets/</code> subfolder and drop <code style="font-family:'DM Mono',monospace;color:var(--accent3);font-size:12px">unlock-mascots.js</code> in there.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num-col">
+          <div class="step-num">3</div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title">Replace <code style="font-family:'DM Mono',monospace;font-size:14px">service-worker-loader.js</code></div>
+          <p class="step-desc">In the root of the versioned folder (same level as <code style="font-family:'DM Mono',monospace;font-size:12px">manifest.json</code>), replace <code style="font-family:'DM Mono',monospace;color:var(--accent3);font-size:12px">service-worker-loader.js</code> with the patched version. The only difference is one added import line at the bottom:</p>
+
+          <div class="code-block">
+            <div class="code-header">
+              <div class="code-filename">
+                <div class="code-dot r"></div>
+                <div class="code-dot y"></div>
+                <div class="code-dot g"></div>
+                service-worker-loader.js
+              </div>
+              <button class="copy-btn" onclick="copyCode(this, `import './assets/index.ts-BxdfawpK.js';\nimport './assets/unlock-mascots.js';`)">copy</button>
+            </div>
+            <pre><span class="hl-comment">// original line — unchanged</span>
+import <span class="hl-val">'./assets/index.ts-BxdfawpK.js'</span>;
+<span class="hl-add">import <span class="hl-val">'./assets/unlock-mascots.js'</span>;   <span class="hl-comment">// ← add this</span></span></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num-col">
+          <div class="step-num">4</div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title">Reload MysticMate</div>
+          <p class="step-desc">Back in <code style="font-family:'DM Mono',monospace;color:var(--accent3);font-size:12px">chrome://extensions</code>, find MysticMate and click the <strong>↻ reload</strong> button (the circular arrow icon under the extension card).</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num-col">
+          <div class="step-num">5</div>
+          <div class="step-line"></div>
+        </div>
+        <div class="step-body">
+          <div class="step-title">Done — open MysticMate</div>
+          <p class="step-desc">Click the MysticMate icon in your toolbar and open the mascot list. All mascots should now be unlocked. The patch re-applies automatically on every browser restart.</p>
+          <div class="callout ok" style="margin-top:12px">
+            <span class="callout-icon">✅</span>
+            <span>You should see all mascots unlocked in the list. The console (background service worker) will log: <code style="font-family:'DM Mono',monospace;font-size:12px">[unlock-mascots] Unlocked N mascots</code></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- FILES -->
+  <section class="reveal">
+    <div class="section-label">the patch file</div>
+    <h2>unlock-mascots.js</h2>
+    <p>Here's the complete contents of the patch file for reference:</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-filename">
+          <div class="code-dot r"></div>
+          <div class="code-dot y"></div>
+          <div class="code-dot g"></div>
+          assets/unlock-mascots.js
+        </div>
+        <button class="copy-btn" id="patchCopyBtn" onclick="copyPatch(this)">copy</button>
+      </div>
+      <pre id="patchCode"><span class="hl-comment">// Place in /assets/ and import from service-worker-loader.js</span>
+
+<span class="hl-key">const</span> MASCOT_IDS = [
+  <span class="hl-val">"blank-guy"</span>, <span class="hl-val">"caicai"</span>, <span class="hl-val">"jiqiren"</span>, <span class="hl-val">"yeyangbaixuan"</span>, <span class="hl-val">"xialinglan"</span>, <span class="hl-val">"hatsune-miku"</span>, <span class="hl-val">"miku"</span>,
+  <span class="hl-val">"reimu"</span>, <span class="hl-val">"marisa"</span>, <span class="hl-val">"cirno"</span>, <span class="hl-val">"remilia"</span>, <span class="hl-val">"sakuya"</span>, <span class="hl-val">"patchouli"</span>,
+  <span class="hl-val">"alice"</span>, <span class="hl-val">"youmu"</span>, <span class="hl-val">"yuyuko"</span>, <span class="hl-val">"ran"</span>, <span class="hl-val">"chen"</span>, <span class="hl-val">"yukari"</span>, <span class="hl-val">"suika"</span>,
+  <span class="hl-val">"reisen"</span>, <span class="hl-val">"tewi"</span>, <span class="hl-val">"eirin"</span>, <span class="hl-val">"kaguya"</span>, <span class="hl-val">"mokou"</span>, <span class="hl-val">"keine"</span>, <span class="hl-val">"mystia"</span>,
+  <span class="hl-val">"wriggle"</span>, <span class="hl-val">"rumia"</span>, <span class="hl-val">"koishi"</span>, <span class="hl-val">"satori"</span>, <span class="hl-val">"orin"</span>, <span class="hl-val">"okuu"</span>, <span class="hl-val">"nitori"</span>,
+  <span class="hl-val">"momiji"</span>, <span class="hl-val">"aya"</span>, <span class="hl-val">"sanae"</span>, <span class="hl-val">"kanako"</span>, <span class="hl-val">"suwako"</span>, <span class="hl-val">"hatate"</span>,
+  <span class="hl-val">"kogasa"</span>, <span class="hl-val">"ichirin"</span>, <span class="hl-val">"murasa"</span>, <span class="hl-val">"shou"</span>, <span class="hl-val">"nazrin"</span>, <span class="hl-val">"byakuren"</span>, <span class="hl-val">"nue"</span>,
+];
+
+<span class="hl-key">function</span> fmt(id) {
+  <span class="hl-key">return</span> id.split(<span class="hl-val">"-"</span>).map(w => w[0].toUpperCase() + w.slice(1)).join(<span class="hl-val">" "</span>);
+}
+
+<span class="hl-key">async function</span> applyUnlock() {
+  <span class="hl-key">try</span> {
+    <span class="hl-key">const</span> results = <span class="hl-key">await</span> Promise.all(
+      MASCOT_IDS.map(<span class="hl-key">async</span> id => {
+        <span class="hl-key">try</span> {
+          <span class="hl-key">const</span> res = <span class="hl-key">await</span> fetch(chrome.runtime.getURL(id + <span class="hl-val">"/shime.png"</span>), { method: <span class="hl-val">"HEAD"</span> });
+          <span class="hl-key">return</span> res.ok ? id : <span class="hl-key">null</span>;
+        } <span class="hl-key">catch</span> (_) { <span class="hl-key">return null</span>; }
+      })
+    );
+    <span class="hl-key">const</span> ids = results.filter(Boolean);
+    <span class="hl-key">if</span> (!ids.includes(<span class="hl-val">"blank-guy"</span>)) ids.unshift(<span class="hl-val">"blank-guy"</span>);
+
+    <span class="hl-key">const</span> owned = ids.map(specId => ({
+      specId, name: fmt(specId),
+      acquiredAt: Date.now(),
+      customPersonality: <span class="hl-key">null</span>, spceUrl: <span class="hl-key">null</span>,
+    }));
+
+    <span class="hl-key">await</span> chrome.storage.sync.set({ ownedMascots: JSON.stringify(owned) });
+    <span class="hl-key">await</span> chrome.storage.local.set({
+      encounterEnabledUserPref: <span class="hl-key">true</span>,
+      clueEnabledUserPref:      <span class="hl-key">true</span>,
+      bossKeyHidden:            <span class="hl-key">false</span>,
+      excludedDomains:          [],
+    });
+
+    console.log(<span class="hl-val">`[unlock-mascots] Unlocked ${ids.length} mascots`</span>);
+  } <span class="hl-key">catch</span> (e) {
+    console.error(<span class="hl-val">"[unlock-mascots] Error:"</span>, e);
+  }
+}
+
+applyUnlock(); <span class="hl-comment">// runs every time the service worker starts</span>
+
+self.addEventListener(<span class="hl-val">"install"</span>,  () =&gt; applyUnlock());
+self.addEventListener(<span class="hl-val">"activate"</span>, () =&gt; applyUnlock());</pre>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- NEST SIZE PATCH -->
+  <section class="reveal">
+    <div class="section-label">optional patch</div>
+    <h2>nest-size.js — Hide / Show Home Nest</h2>
+    <p>This optional patch hides the home nest icon that appears at the bottom-left of every page when a mascot is active. Press <kbd style="font-family:'DM Mono',monospace;font-size:12px;background:var(--surface2);border:1px solid var(--border);padding:2px 7px;border-radius:3px;color:var(--accent)">Alt+W</kbd> at any time to toggle it visible or hidden.</p>
+
+    <div class="file-cards">
+      <div class="file-card">
+        <div class="file-icon">📄</div>
+        <div class="file-name">assets/nest-size.js</div>
+        <div class="file-desc">New file — drop into <code style="font-size:12px;color:var(--accent)">/assets/</code> folder</div>
+      </div>
+      <div class="file-card">
+        <div class="file-icon">✏️</div>
+        <div class="file-name">manifest.json</div>
+        <div class="file-desc">Existing file — replace with version that registers nest-size.js as a content script</div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <span class="callout-icon">ℹ️</span>
+      <span>The nest lives inside a Shadow DOM — normal CSS can't reach it. This script injects a style tag directly into the shadow root and listens for <strong>Alt+W</strong> to toggle visibility. Starts hidden by default.</span>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-filename">
+          <div class="code-dot r"></div>
+          <div class="code-dot y"></div>
+          <div class="code-dot g"></div>
+          assets/nest-size.js
+        </div>
+        <button class="copy-btn" id="nestCopyBtn" onclick="copyNest(this)">copy</button>
+      </div>
+      <pre id="nestCode"><span class="hl-comment">// Alt+W to toggle hide/show of the nest/home zone</span>
+
+<span class="hl-key">const</span> HOST_ID = <span class="hl-val">"shimeji-shadow-host"</span>;
+<span class="hl-key">let</span> hidden = <span class="hl-key">true</span>;
+
+<span class="hl-key">function</span> getShadow() {
+  <span class="hl-key">return</span> document.getElementById(HOST_ID)?.shadowRoot ?? <span class="hl-key">null</span>;
+}
+
+<span class="hl-key">function</span> applyState() {
+  <span class="hl-key">const</span> shadow = getShadow();
+  <span class="hl-key">if</span> (!shadow) <span class="hl-key">return</span>;
+  <span class="hl-key">let</span> style = shadow.querySelector(<span class="hl-val">"#nest-patch"</span>);
+  <span class="hl-key">if</span> (!style) {
+    style = document.createElement(<span class="hl-val">"style"</span>);
+    style.id = <span class="hl-val">"nest-patch"</span>;
+    shadow.appendChild(style);
+  }
+  style.textContent = hidden
+    ? <span class="hl-val">`#shimeji-rest-zone { display: none !important; }`</span>
+    : <span class="hl-val">`#shimeji-rest-zone { display: flex !important; }`</span>;
+}
+
+document.addEventListener(<span class="hl-val">"keydown"</span>, (e) => {
+  <span class="hl-key">if</span> (e.altKey && e.key.toLowerCase() === <span class="hl-val">"w"</span>) {
+    e.preventDefault();
+    hidden = !hidden;
+    applyState();
+    console.log(<span class="hl-val">"[nest-patch] nest"</span>, hidden ? <span class="hl-val">"hidden"</span> : <span class="hl-val">"visible"</span>);
+  }
+});
+
+<span class="hl-key">const</span> mo = <span class="hl-key">new</span> MutationObserver(() => {
+  <span class="hl-key">if</span> (getShadow()) {
+    applyState();
+    mo.disconnect();
+    <span class="hl-key">const</span> mo2 = <span class="hl-key">new</span> MutationObserver(applyState);
+    mo2.observe(document.getElementById(HOST_ID), { childList: <span class="hl-key">true</span> });
+  }
+});
+mo.observe(document.documentElement, { childList: <span class="hl-key">true</span>, subtree: <span class="hl-key">true</span> });
+
+applyState();</pre>
+    </div>
+
+    <p style="margin-top:16px">Then update <code style="font-family:'DM Mono',monospace;color:var(--accent3);font-size:13px">manifest.json</code> — merge both content scripts into one array and add <code style="font-family:'DM Mono',monospace;color:var(--accent3);font-size:13px">nest-size.js</code> to <code style="font-family:'DM Mono',monospace;color:var(--accent3);font-size:13px">web_accessible_resources</code>:</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-filename">
+          <div class="code-dot r"></div>
+          <div class="code-dot y"></div>
+          <div class="code-dot g"></div>
+          manifest.json — content_scripts section
+        </div>
+      </div>
+      <pre><span class="hl-comment">// ⚠ JSON cannot have two "content_scripts" keys — merge into ONE array</span>
+
+<span class="hl-val">"content_scripts"</span>: [
+  {
+    <span class="hl-val">"js"</span>: [ <span class="hl-val">"assets/index.ts-loader-xo8arMU7.js"</span> ],
+    <span class="hl-val">"matches"</span>: [ <span class="hl-val">"&lt;all_urls&gt;"</span> ],
+    <span class="hl-val">"run_at"</span>: <span class="hl-val">"document_end"</span>
+  },
+<span class="hl-add">  {
+    <span class="hl-val">"js"</span>: [ <span class="hl-val">"assets/nest-size.js"</span> ],   <span class="hl-comment">// ← add this entry</span>
+    <span class="hl-val">"matches"</span>: [ <span class="hl-val">"&lt;all_urls&gt;"</span> ],
+    <span class="hl-val">"run_at"</span>: <span class="hl-val">"document_end"</span>
+  }</span>
+]</pre>
+    </div>
+
+    <div class="callout warn">
+      <span class="callout-icon">⚠️</span>
+      <span>You also need to add <code style="font-family:'DM Mono',monospace;font-size:12px">"assets/nest-size.js"</code> to the <code style="font-family:'DM Mono',monospace;font-size:12px">web_accessible_resources</code> resources array in <code style="font-family:'DM Mono',monospace;font-size:12px">manifest.json</code>, otherwise Chrome won't load the file.</span>
+    </div>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-filename">
+          <div class="code-dot r"></div>
+          <div class="code-dot y"></div>
+          <div class="code-dot g"></div>
+          manifest.json — web_accessible_resources
+        </div>
+      </div>
+      <pre><span class="hl-val">"web_accessible_resources"</span>: [ {
+  <span class="hl-val">"matches"</span>: [ <span class="hl-val">"&lt;all_urls&gt;"</span> ],
+  <span class="hl-val">"resources"</span>: [
+    <span class="hl-comment">// ... all existing entries ...</span>
+    <span class="hl-val">"assets/index.ts-BNF88MQI.js"</span>,
+<span class="hl-add">    <span class="hl-val">"assets/nest-size.js"</span>          <span class="hl-comment">// ← add this line</span></span>
+  ],
+  <span class="hl-val">"use_dynamic_url"</span>: <span class="hl-key">false</span>
+} ]</pre>
+    </div>
+
+    <div class="callout ok">
+      <span class="callout-icon">✅</span>
+      <span>Just one new line — added right after the last existing entry <code style="font-family:'DM Mono',monospace;font-size:12px">"assets/index.ts-BNF88MQI.js"</code>. Make sure there's a comma at the end of the line above it.</span>
+    </div>
+
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- FAQ -->
+  <section class="reveal">
+    <div class="section-label">troubleshooting</div>
+    <h2>FAQ</h2>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        I see "Extension context invalidated" errors on web pages
+        <span class="faq-chevron">⌄</span>
+      </div>
+      <div class="faq-a">This is unrelated to the patch. It happens when MysticMate's content script (already running in an open tab) tries to call Chrome APIs after the extension was reloaded. It's harmless — just refresh any open tabs and the error disappears. This is normal Chrome behavior after any extension reload.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        Mascots are still locked after reloading
+        <span class="faq-chevron">⌄</span>
+      </div>
+      <div class="faq-a">Open Chrome DevTools → go to chrome://extensions → click "Service Worker" under MysticMate → check the Console tab for <code style="font-family:'DM Mono',monospace;font-size:12px">[unlock-mascots]</code> messages. If you see an error there, the file path is likely wrong — make sure unlock-mascots.js is inside the <code style="font-family:'DM Mono',monospace;font-size:12px">assets/</code> subfolder, not the root.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        Will this break after MysticMate updates?
+        <span class="faq-chevron">⌄</span>
+      </div>
+      <div class="faq-a">Yes — Chrome extension updates replace the entire folder with a new versioned copy. After an update you'll need to re-add the two files to the new version folder. The <code style="font-family:'DM Mono',monospace;font-size:12px">unlock-mascots.js</code> file itself never needs to change.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        Is this safe? Does MysticMate send any data externally?
+        <span class="faq-chevron">⌄</span>
+      </div>
+      <div class="faq-a">The extension was fully audited. No analytics, no telemetry, no fingerprinting. The backend API URL is hardcoded as an empty string and the code comment says "using hardcoded test data, no backend request." All data stays in your local Chrome storage and syncs only to your own Google account via chrome.storage.sync.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        Why does the patch re-run every browser restart?
+        <span class="faq-chevron">⌄</span>
+      </div>
+      <div class="faq-a">Chrome's chrome.storage.sync can occasionally be cleared or reset (e.g. if you sign out of Chrome). Re-running on every startup ensures mascots stay unlocked without any manual intervention.</div>
+    </div>
+
+  </section>
+
+  <footer>
+    <p>MysticMate Unlock Guide &nbsp;·&nbsp; for personal use only &nbsp;·&nbsp; <a href="https://chromewebstore.google.com/detail/mysticmate-interactive-sh/biaplbhoaffjahhmbkfmdoagkklhanao" target="_blank">get mysticmate ↗</a></p>
+  </footer>
+
+</div>
+
+<script>
+  // ── Scroll reveal ──
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // ── Copy buttons ──
+  function copyCode(btn, text) {
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  function copyPatch(btn) {
+    const code = `// Place in /assets/ and import from service-worker-loader.js
+
+const MASCOT_IDS = [
+  "blank-guy","caicai","jiqiren","yeyangbaixuan","xialinglan","hatsune-miku","miku",
+  "reimu","marisa","cirno","remilia","sakuya","patchouli",
+  "alice","youmu","yuyuko","ran","chen","yukari","suika",
+  "reisen","tewi","eirin","kaguya","mokou","keine","mystia",
+  "wriggle","rumia","koishi","satori","orin","okuu","nitori",
+  "momiji","aya","sanae","kanako","suwako","hatate","kogasa",
+  "ichirin","murasa","shou","nazrin","byakuren","nue",
+];
+
+function fmt(id) {
+  return id.split("-").map(w => w[0].toUpperCase() + w.slice(1)).join(" ");
+}
+
+async function applyUnlock() {
+  try {
+    const results = await Promise.all(
+      MASCOT_IDS.map(async id => {
+        try {
+          const res = await fetch(chrome.runtime.getURL(id + "/shime.png"), { method: "HEAD" });
+          return res.ok ? id : null;
+        } catch (_) { return null; }
+      })
+    );
+    const ids = results.filter(Boolean);
+    if (!ids.includes("blank-guy")) ids.unshift("blank-guy");
+
+    const owned = ids.map(specId => ({
+      specId, name: fmt(specId),
+      acquiredAt: Date.now(),
+      customPersonality: null, spceUrl: null,
+    }));
+
+    await chrome.storage.sync.set({ ownedMascots: JSON.stringify(owned) });
+    await chrome.storage.local.set({
+      encounterEnabledUserPref: true,
+      clueEnabledUserPref:      true,
+      bossKeyHidden:            false,
+      excludedDomains:          [],
+    });
+
+    console.log(\`[unlock-mascots] Unlocked \${ids.length} mascots\`);
+  } catch (e) {
+    console.error("[unlock-mascots] Error:", e);
+  }
+}
+
+applyUnlock();`;
+    navigator.clipboard.writeText(code).then(() => {
+      btn.textContent = 'copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  function copyNest(btn) {
+    const code = `// Alt+W to toggle hide/show of the nest/home zone
+
+const HOST_ID = "shimeji-shadow-host";
+let hidden = true;
+
+function getShadow() {
+  return document.getElementById(HOST_ID)?.shadowRoot ?? null;
+}
+
+function applyState() {
+  const shadow = getShadow();
+  if (!shadow) return;
+  let style = shadow.querySelector("#nest-patch");
+  if (!style) {
+    style = document.createElement("style");
+    style.id = "nest-patch";
+    shadow.appendChild(style);
+  }
+  style.textContent = hidden
+    ? \`#shimeji-rest-zone { display: none !important; }\`
+    : \`#shimeji-rest-zone { display: flex !important; }\`;
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.altKey && e.key.toLowerCase() === "w") {
+    e.preventDefault();
+    hidden = !hidden;
+    applyState();
+    console.log("[nest-patch] nest", hidden ? "hidden" : "visible");
+  }
+});
+
+const mo = new MutationObserver(() => {
+  if (getShadow()) {
+    applyState();
+    mo.disconnect();
+    const mo2 = new MutationObserver(applyState);
+    mo2.observe(document.getElementById(HOST_ID), { childList: true });
+  }
+});
+mo.observe(document.documentElement, { childList: true, subtree: true });
+
+applyState();`;
+    navigator.clipboard.writeText(code).then(() => {
+      btn.textContent = 'copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  // ── FAQ accordion ──
+  function toggleFaq(el) {
+    el.parentElement.classList.toggle('open');
+  }
+</script>
+</body>
+</html>
