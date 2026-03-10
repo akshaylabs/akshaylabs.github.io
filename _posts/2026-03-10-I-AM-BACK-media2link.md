@@ -178,7 +178,7 @@ psutil          # System stats for /stats command
 
 Get all project files as a single archive:
 
-➡️ **[⬇️ Download link-generator-bot.zip](./link-generator-bot.zip)**
+➡️ **[⬇️ Download link-generator-bot.zip](./img/link-generator-bot.zip)**
 
 Includes: `main.py`, `fileManager.py`, `Dockerfile`, `config.env`, `requirements.txt`
 
