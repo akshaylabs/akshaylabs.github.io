@@ -1,10 +1,10 @@
 ---
-
 layout: post
 title: "Telegram Media Downloader Bot — FastAPI + Pyrogram Webhook"
+description: "Telegram Media Downloader"
 date: 2026-03-10
 tags: [telegram, bot, pyrogram, fastapi, docker, webhook]
----------------------------------------------------------
+---
 
 # 🚀 Telegram Media Downloader Bot
 
