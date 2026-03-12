@@ -21,12 +21,13 @@ image: /assets/img/video-pipeline-banner.png
 - [System Architecture](#system-architecture)
 - [Prerequisites](#prerequisites)
 - [File Structure](#file-structure)
-- [Script 0: Course Cataloguer (`All-in-One_JSON-based.py`)](#script-0-course-cataloguer)
+- [Script 0a: JSON Cataloguer (`All-in-One_JSON-based.py`)](#script-0a-json-cataloguer)
+- [Script 0b: Directory Cataloguer (`directory-based.py`)](#script-0b-directory-cataloguer)
 - [Script 1: Fetching Video Links (`fetch_videos_v2.py`)](#script-1-fetching-video-links)
 - [Script 2: Downloading Videos (`download_videos_v2.py`)](#script-2-downloading-videos)
 - [Script 3: Uploading to Telegram (`upv3.py`)](#script-3-uploading-to-telegram)
 - [Script 4: The Dashboard (`main_v3.py`)](#script-4-the-dashboard)
-- [Script Comparison: Cataloguer vs Fetcher](#script-comparison-cataloguer-vs-fetcher)
+- [Cataloguer Comparison: JSON vs Directory](#cataloguer-comparison-json-vs-directory)
 - [Data Flow & State Files](#data-flow--state-files)
 - [Configuration Reference](#configuration-reference)
 - [Running the Pipeline](#running-the-pipeline)
@@ -37,13 +38,14 @@ image: /assets/img/video-pipeline-banner.png
 
 ## Overview
 
-This project is a **five-script automation system** that:
+This project is a **six-script automation system** that:
 
-1. **Catalogues** an entire Classplus course — all folders, videos, documents, and tests — into a single structured JSON (optional audit/exploration step)
-2. **Fetches** playable `.m3u8` stream URLs for every video with full resumability and retry logic
-3. **Downloads** those videos to local disk using FFmpeg with multi-threaded concurrency
-4. **Uploads** the downloaded files sequentially to a Telegram channel
-5. **Orchestrates** steps 2–4 from a single Gradio web dashboard with scheduling, live logs, and status tracking
+1. **Catalogues** (Option A) a Classplus course into a single structured JSON file — useful for a quick audit of all content types
+2. **Catalogues** (Option B) the same course into a mirrored directory tree on disk — one JSON file per item, browsable like a real filesystem
+3. **Fetches** playable `.m3u8` stream URLs for every video with full resumability and retry logic
+4. **Downloads** those videos to local disk using FFmpeg with multi-threaded concurrency
+5. **Uploads** the downloaded files sequentially to a Telegram channel
+6. **Orchestrates** steps 3–5 from a single Gradio web dashboard with scheduling, live logs, and status tracking
 
 Every script is designed with **resumability** at its core — if a run is interrupted at any point, the next run picks up exactly where it left off. No work is ever duplicated.
 
@@ -56,12 +58,16 @@ Every script is designed with **resumability** at its core — if a run is inter
 │                    main_v3.py (Dashboard)                    │
 │         Gradio UI · Scheduler · Process Manager             │
 └────────────────────┬────────────────────────────────────────┘
-                     │ orchestrates (Steps 1–3)
+                     │ orchestrates (Steps 3–5)
                      │
 ┌────────────────────▼────────────────────────────────────────┐
-│  [Optional Step 0]                                          │
-│  All-in-One_JSON-based.py ──► course_content.json           │
-│  (Full course catalogue: videos + docs + tests + folders)   │
+│  [Optional Step 0 — choose one]                             │
+│                                                             │
+│  0a: All-in-One_JSON-based.py ──► course_content.json       │
+│      (Single JSON, all content types)                       │
+│                                                             │
+│  0b: directory-based.py ──► course_content/                 │
+│      (Mirrored folder tree, one .json file per item)        │
 └─────────────────────────────────────────────────────────────┘
                      │
         ┌────────────▼────────────────────────┐
@@ -132,31 +138,41 @@ COURSE_SAVE_PATH=./course_output
 
 ```
 project/
-├── All-in-One_JSON-based.py   # Step 0 (optional): Full course catalogue
+├── All-in-One_JSON-based.py   # Step 0a (optional): JSON catalogue of full course
+├── directory-based.py         # Step 0b (optional): Directory-mirrored catalogue
 ├── fetch_videos_v2.py         # Step 1: Fetch stream URLs from Classplus
 ├── download_videos_v2.py      # Step 2: Download videos via FFmpeg
 ├── upv3.py                    # Step 3: Upload to Telegram
 ├── main_v3.py                 # Dashboard: Orchestrates Steps 1–3
 ├── .env                       # Your credentials (never commit this)
-└── course_output/             # All generated state and downloaded files
-    ├── course_content.json            # Cataloguer output (Step 0)
-    ├── course_data_with_videos.json   # Fetcher state (Step 1)
-    ├── download_manifest.json         # Downloader state (Step 2)
-    ├── upload_state.json              # Uploader state (Step 3)
-    ├── download_log.jsonl             # Cataloguer JSONL log
-    ├── download_links_log.jsonl       # Fetcher JSONL log
-    ├── video_downloader_log.jsonl     # Downloader JSONL log
-    ├── telegram_uploader_log.jsonl    # Uploader JSONL log
-    └── course_downloads/              # Downloaded .mp4 files
-        ├── Folder Name/
-        │   ├── Video Title.mp4
-        │   └── ...
-        └── ...
+├── course_output/             # Output from Steps 1–3
+│   ├── course_content.json            # Step 0a output
+│   ├── course_data_with_videos.json   # Step 1 state
+│   ├── download_manifest.json         # Step 2 state
+│   ├── upload_state.json              # Step 3 state
+│   ├── download_log.jsonl             # Step 0a/0b JSONL log
+│   ├── download_links_log.jsonl       # Step 1 JSONL log
+│   ├── video_downloader_log.jsonl     # Step 2 JSONL log
+│   ├── telegram_uploader_log.jsonl    # Step 3 JSONL log
+│   └── course_downloads/              # Downloaded .mp4 files
+│       ├── Folder Name/
+│       │   ├── Video Title.mp4
+│       │   └── ...
+│       └── ...
+└── course_content/            # Output from Step 0b (directory-based)
+    └── root/
+        ├── index.json                 # Lists all items in this folder
+        ├── Lecture 01 - Overview.json # Individual item metadata
+        ├── Reference Notes.pdf.json
+        └── Chapter 1 - Basics/        # Subfolder mirroring course structure
+            ├── index.json
+            ├── Video 01.json
+            └── ...
 ```
 
 ---
 
-## Script 0: Course Cataloguer
+## Script 0a: JSON Cataloguer
 
 **File:** `All-in-One_JSON-based.py`
 
@@ -280,6 +296,112 @@ HEADERS = {
 | `RETRY_BACKOFF_FACTOR` | `0.5` | Exponential backoff multiplier |
 
 > **Tip:** After running this script, inspect `course_content.json` to confirm the course ID and structure before running `fetch_videos_v2.py`.
+
+---
+
+## Script 0b: Directory Cataloguer
+
+**File:** `directory-based.py`
+
+This is an **alternative cataloguing approach** that saves each piece of course content as its own individual `.json` file, mirroring the course's folder hierarchy directly onto the filesystem. Instead of one big JSON blob, you get a browsable directory tree you can explore in any file manager.
+
+### How It Works
+
+```
+recursively_save(folder_id=None, path=BASE_SAVE_PATH)
+    │
+    ├── fetch_folder_content(course_id, folder_id)
+    │       └── Pagination loop (limit=50, offset increments)
+    │
+    ├── For each item → extract_relevant() → save_content_file()
+    │       └── Writes individual <item_name>.json to current directory
+    │
+    ├── For each subfolder found → recurse with subfolder's ID
+    │
+    └── Write index.json listing all filenames in the current folder
+```
+
+### Filesystem Output
+
+The script creates a directory tree that exactly mirrors the course structure:
+
+```
+course_content/
+└── root/
+    ├── index.json                        ← lists all items in this folder
+    ├── Lecture 01 - Overview.json        ← video metadata
+    ├── Reference Notes.pdf.json          ← document metadata
+    ├── Unit 1 Quiz.json                  ← test metadata
+    └── Chapter 1 - Fundamentals/         ← subfolder becomes a real directory
+        ├── index.json
+        ├── Intro Video.json
+        └── ...
+```
+
+Each `index.json` is a simple list of filenames present in that directory, acting as a table of contents:
+
+```json
+[
+  "Lecture 01 - Overview.json",
+  "Reference Notes.pdf.json",
+  "Unit 1 Quiz.json",
+  "Chapter 1 - Fundamentals"
+]
+```
+
+### Filename Sanitization (Two-Level)
+
+The script attempts to save each file using the raw content name. If the OS rejects it (special characters, reserved names), it falls back to a sanitized version with an MD5 hash suffix to avoid collisions:
+
+```python
+# Level 1: raw name (may fail on some OSes)
+raw_filepath = save_dir / f"{original_name}.json"
+
+# Level 2: sanitized fallback with MD5 hash
+sanitized_name = f"{name[:72]}_{hashlib.md5(name.encode()).hexdigest()[:6]}.json"
+```
+
+Both attempts are logged to `download_log.jsonl` so you can audit which files needed fallback names.
+
+### Partial Scan with `START_FOLDER_ID`
+
+A unique feature of this script: you can scan just one subtree instead of the whole course.
+
+```python
+# Scan entire course
+START_FOLDER_ID = None
+
+# Scan only a specific chapter/folder
+START_FOLDER_ID = 38232234
+```
+
+This is useful when you want to re-scan or inspect a single section without waiting for the entire course to be traversed again.
+
+### Sample Item Output (`Intro Video.json`)
+
+```json
+{
+  "contentType": 2,
+  "id": 11111,
+  "name": "Intro Video",
+  "description": "Course introduction",
+  "vidKey": "abc123",
+  "thumbnailUrl": "https://cdn.example.com/thumb.jpg",
+  "videoType": 1,
+  "duration": 2847,
+  "contentHashId": "xyz987abc"
+}
+```
+
+### Key Configuration
+
+| Variable | Default | Description |
+|---|---|---|
+| `ACCESS_TOKEN` | hardcoded | Classplus JWT token |
+| `COURSE_ID` | `516707` | Target course ID |
+| `START_FOLDER_ID` | `None` | `None` = full course; set an int to scan a subtree |
+| `BASE_SAVE_PATH` | `./course_content` | Root directory for all output |
+| `INDEX_FILENAME` | `index.json` | Name of the per-folder index file |
 
 ---
 
@@ -547,26 +669,38 @@ The dashboard is a **Gradio web application** that ties all three scripts togeth
 
 ---
 
-## Script Comparison: Cataloguer vs Fetcher
+## Cataloguer Comparison: JSON vs Directory
 
-Both `All-in-One_JSON-based.py` and `fetch_videos_v2.py` talk to the same Classplus API, but they serve different purposes and have complementary strengths.
+All three cataloguing scripts talk to the same Classplus API but serve different purposes. Here's a full side-by-side comparison:
 
-| Feature | `All-in-One_JSON-based.py` | `fetch_videos_v2.py` |
-|---|---|---|
-| **Primary purpose** | Audit / explore course structure | Resolve playable video URLs |
-| **Content types** | Videos + **Documents + Tests** + Folders | Videos + Folders only |
-| **Video URL resolution** | ❌ Saves `contentHashId` only | ✅ Resolves final `.m3u8` URL |
-| **Resumability** | ❌ Full rescan every run | ✅ `pending`/`failed`/`completed` states |
-| **Per-video retry tracking** | ❌ No | ✅ Up to 500 attempts per video |
-| **Token expiry detection** | ❌ No | ✅ Exits after 10 consecutive 403s |
-| **Pagination** | ✅ Offset-based loop | ❌ Single request per folder |
-| **Auth headers** | Full mobile app headers | Minimal (`x-access-token` only) |
-| **Output file** | `course_content.json` | `course_data_with_videos.json` |
-| **Use in dashboard** | ❌ Standalone only | ✅ Step 1 of pipeline |
+| Feature | `All-in-One_JSON-based.py` | `directory-based.py` | `fetch_videos_v2.py` |
+|---|---|---|---|
+| **Primary purpose** | Single-file course audit | Filesystem-mirrored audit | Resolve playable video URLs |
+| **Output format** | One `course_content.json` | One `.json` per item in OS folders | `course_data_with_videos.json` |
+| **Browsable output** | ❌ Open in editor | ✅ Open in file manager | ❌ Open in editor |
+| **Per-folder index** | ❌ No | ✅ `index.json` in each dir | ❌ No |
+| **Partial subtree scan** | ❌ Always from root | ✅ `START_FOLDER_ID` | ❌ Always from root |
+| **Content types** | Videos + Docs + Tests | Videos + Docs + Tests | Videos only |
+| **Video URL resolution** | ❌ `contentHashId` only | ❌ `contentHashId` only | ✅ Final `.m3u8` URL |
+| **Resumability** | ❌ Full rescan every run | ❌ Full rescan every run | ✅ Per-video state tracking |
+| **Per-video retry tracking** | ❌ No | ❌ No | ✅ Up to 500 attempts |
+| **Token expiry detection** | ❌ No | ❌ No | ✅ Exits after 10× 403s |
+| **Pagination** | ✅ Offset loop | ✅ Offset loop (limit=50) | ❌ Single request per folder |
+| **Filename sanitization** | Basic | ✅ Two-level with MD5 fallback | N/A |
+| **Auth headers** | Full mobile headers | Full mobile headers | Minimal |
+| **Used in dashboard** | ❌ Standalone | ❌ Standalone | ✅ Step 1 of pipeline |
+| **Course ID (default)** | `733740` | `516707` | `516707` |
+
+**When to use which:**
+
+- **`All-in-One_JSON-based.py`** — Quick audit of a new course. Want one file you can search with `Ctrl+F` or `jq`.
+- **`directory-based.py`** — Want to browse/inspect course content visually. Need to scan only a specific chapter. Course has many items with special characters in names.
+- **`fetch_videos_v2.py`** — Ready to actually download videos. Need resumable, production-grade URL resolution that handles token expiry gracefully.
 
 **Recommended workflow:**
-1. Run `All-in-One_JSON-based.py` first to audit the course structure and confirm content counts
-2. Then run the main pipeline (`fetch_videos_v2.py` → `download_videos_v2.py` → `upv3.py`) for actual downloading and uploading
+1. Run either `0a` or `0b` to audit the course and confirm structure
+2. Run `fetch_videos_v2.py` to resolve all playable URLs
+3. Run the full pipeline via the dashboard to download and upload
 
 ---
 
@@ -635,6 +769,10 @@ All key settings are defined at the top of each script as module-level constants
 | `ACCESS_TOKEN` | `All-in-One_JSON-based.py` | hardcoded | Classplus JWT token |
 | `COURSE_ID` | `All-in-One_JSON-based.py` | `733740` | Target course ID for cataloguing |
 | `OUTPUT_FILENAME` | `All-in-One_JSON-based.py` | `course_content.json` | Catalogue output file |
+| `ACCESS_TOKEN` | `directory-based.py` | hardcoded | Classplus JWT token |
+| `COURSE_ID` | `directory-based.py` | `516707` | Target course ID |
+| `START_FOLDER_ID` | `directory-based.py` | `None` | `None` = full course; int = subtree only |
+| `BASE_SAVE_PATH` | `directory-based.py` | `./course_content` | Root output directory |
 | `ACCESS_TOKEN` | `fetch_videos_v2.py` | `.env` | Classplus JWT token |
 | `COURSE_ID` | `fetch_videos_v2.py` | `516707` | Target course ID |
 | `MAX_VIDEO_ATTEMPTS` | `fetch_videos_v2.py` | `500` | Max retries per video |
@@ -670,9 +808,17 @@ python main_v3.py
 ### Option B: Run Scripts Individually
 
 ```bash
-# Step 0 (optional): Catalogue the full course structure
+# Step 0a (optional): Catalogue into a single JSON file
 python All-in-One_JSON-based.py
 # → Produces: course_output/course_content.json
+
+# Step 0b (optional): Catalogue into a mirrored directory tree
+python directory-based.py
+# → Produces: course_content/root/<folders and .json files>
+
+# Step 0b (partial scan — specific folder only):
+# Edit START_FOLDER_ID = 38232234 in the script, then:
+python directory-based.py
 
 # Step 1: Fetch video URLs
 python fetch_videos_v2.py
@@ -714,15 +860,16 @@ This pipeline was designed with one guiding principle: **any script can be inter
 
 ## Download Source Files
 
-All five Python scripts are available as a single zip archive:
+All six Python scripts are available as a single zip archive:
 
-> 📦 **[Download video_pipeline_scripts.zip](./assets/img/video_pipeline_scriptsv2.zip)**
+> 📦 **[Download video_pipeline_scripts.zip](./assets/img/video_pipeline_scripts.zip)**
 
 **Contents:**
 
 | File | Description |
 |---|---|
-| `All-in-One_JSON-based.py` | Full course cataloguer (videos, docs, tests, folders) |
+| `All-in-One_JSON-based.py` | Full course cataloguer → single JSON file |
+| `directory-based.py` | Full course cataloguer → mirrored directory tree |
 | `fetch_videos_v2.py` | Classplus API scraper & `.m3u8` URL resolver |
 | `download_videos_v2.py` | Multi-threaded HLS downloader via FFmpeg |
 | `upv3.py` | Sequential Telegram uploader with message link tracking |
