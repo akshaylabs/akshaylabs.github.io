@@ -862,7 +862,7 @@ This pipeline was designed with one guiding principle: **any script can be inter
 
 All six Python scripts are available as a single zip archive:
 
-> 📦 **[Download video_pipeline_scripts.zip](./assets/img/video_pipeline_scripts.zip)**
+> 📦 **[Download video_pipeline_scripts.zip](./assets/img/video_pipeline_scriptsv3.zip)**
 
 **Contents:**
 
