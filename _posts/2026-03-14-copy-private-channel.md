@@ -484,7 +484,6 @@ You can download the full source package (includes `main_v4.py` and `requirement
 
 ## 🙏 Credits
 
-- **Author:** [@TheSmartBisnu](https://t.me/itsSmartDev)
 - **MTProto client:** [Pyrofork](https://github.com/Mayuri-Chan/pyrofork) (Pyrogram fork)
 - **Web framework:** [FastAPI](https://fastapi.tiangolo.com/)
 
